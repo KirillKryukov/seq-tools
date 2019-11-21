@@ -9,3 +9,5 @@ These tools are super-fast, use constant RAM, and scale to huge data sizes.
 `seq-t2u <in.seq >out.seq` - Convert T to U.
 
 `seq-u2t <in.seq >out.seq` - Convert U to T.
+
+`seq-merge-lines <in.seq >out.seq` - Remove end-of-line characters.
