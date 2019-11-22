@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 
 #define in_buffer_size 16384
@@ -18,6 +19,8 @@ static void allocate_in_buffer(void)
 {
     in_buffer = (unsigned char *) malloc(in_buffer_size);
     if (in_buffer == NULL) { fputs("Can't allocate memory\n", stderr); exit(1); }
+    (void)in_begin;
+    (void)in_end;
 }
 
 
