@@ -3,7 +3,7 @@
  * Copyright (c) 2019 Kirill Kryukov
  * See README.md and LICENSE files of this repository
  *
- * Usage: seq-t2u <INPUT >OUTPUT
+ * Usage: seq-t2u <in.seq >out.seq
  */
 
 #include "common.c"
