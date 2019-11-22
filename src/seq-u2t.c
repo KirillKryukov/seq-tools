@@ -3,7 +3,7 @@
  * Copyright (c) 2019 Kirill Kryukov
  * See README.md and LICENSE files of this repository
  *
- * Usage: seq-u2t <INPUT >OUTPUT
+ * Usage: seq-u2t <in.seq >out.seq
  */
 
 #include "common.c"
