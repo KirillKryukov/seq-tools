@@ -68,3 +68,5 @@ Naturally, please be aware of numerous other toolkits that may or may not better
 `seq-u2t <in.seq >out.seq` - Convert U to T.
 
 `seq-merge-lines <in.seq >out.seq` - Remove end-of-line characters.
+
+`seq-split-to-lines --line-length 100 <in.seq >out.seq` - Split single-line sequence into lines.
