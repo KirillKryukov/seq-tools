@@ -29,13 +29,13 @@ and has no available super-fast tool, please post a request in the Issues.
 
 ## Features
 
-**Simplicity:** These tools are intentionally very simple.
+**Simplicity:**
+These tools are intentionally very simple.
 Each tool is doing one task only in the most natural way.
 The logic of each tool is straightforward and understandable.
-Crucially, this means that even a non-specialist can understand them,
-maintain them, and adapt them to specific needs.
+A non-specialist should be able understand them and adapt them to specific needs.
 
-**Simplicity:** (again, because it's important).
+**Compactness:**
 These tools don't pull massive libraries or frameworks.
 They don't consist of hundreds of interlinked source files.
 When they don't work as you expect, you don't have to untangle call chains 20 levels deep.
@@ -54,12 +54,11 @@ File formats and conventions are explicitly documented.
 ## Alternatives
 
 Naturally, please be aware of numerous other toolkits that may or may not better suit your needs:
-
-* [Seqtk](https://github.com/lh3/seqtk)
-* [FASTX-Toolkit](http://hannonlab.cshl.edu/fastx_toolkit/)
-* [SeqKit](https://github.com/shenwei356/seqkit)
-* [seqmagick](https://fhcrc.github.io/seqmagick/)
-* [Fasta Utilities](https://github.com/jimhester/fasta_utilities)
+[Seqtk](https://github.com/lh3/seqtk),
+[FASTX-Toolkit](http://hannonlab.cshl.edu/fastx_toolkit/),
+[SeqKit](https://github.com/shenwei356/seqkit),
+[seqmagick](https://fhcrc.github.io/seqmagick/),
+[Fasta Utilities](https://github.com/jimhester/fasta_utilities).
 
 ## Synopsis
 
@@ -70,3 +69,5 @@ Naturally, please be aware of numerous other toolkits that may or may not better
 `seq-merge-lines <in.seq >out.seq` - Remove end-of-line characters.
 
 `seq-split-to-lines --line-length 100 <in.seq >out.seq` - Split single-line sequence into lines.
+
+`seq-change-case-to-upper <in.seq >out.seq` - Converts sequence to uppercase.

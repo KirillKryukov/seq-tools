@@ -7,7 +7,7 @@ CFLAGS = -std=c99 -Wall -Wextra -Wpedantic \
 
 .PHONY: default all clean
 
-tools := seq-t2u seq-u2t seq-merge-lines seq-split-to-lines
+tools := seq-t2u seq-u2t seq-merge-lines seq-split-to-lines seq-change-case-to-upper
 
 default: $(addprefix bin/, $(tools))
 
