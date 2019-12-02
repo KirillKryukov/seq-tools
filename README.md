@@ -59,4 +59,4 @@ Naturally, please be aware of numerous other toolkits that may or may not better
 
 **Sequence:** A text file containing only ASCII characters a-z and A-Z.
 
-**Multi-line sequence:** A sequence file where additionally character 0x0A can be use for separating lines.
+**Multi-line sequence:** A sequence file where additionally character 0x0A can be used for separating lines.
