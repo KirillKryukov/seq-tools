@@ -12,6 +12,7 @@
 static void done(void)
 {
     free_in_buffer();
+    fclose_or_die(stdout);
 }
 
 
@@ -27,13 +28,14 @@ static void process(void)
             in_buffer[i] = (unsigned char)( in_buffer[i] ^ ((in_buffer[i] & 0xDF) == 'U') );
         }
 
-        fwrite(in_buffer, 1, in_end, stdout);
+        fwrite_or_die(in_buffer, 1, in_end, stdout);
     }
 }
 
 
 int main(void)
 {
+    tool_name = "seq-u2t";
     atexit(done);
     change_io_to_binary_mode();
     allocate_in_buffer();

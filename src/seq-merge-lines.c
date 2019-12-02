@@ -12,6 +12,7 @@
 static void done(void)
 {
     free_in_buffer();
+    fclose_or_die(stdout);
 }
 
 
@@ -27,18 +28,19 @@ static void process(void)
         {
             if (in_buffer[i] == 10)
             {
-                fwrite(in_buffer + in_begin, 1, i - in_begin, stdout);
+                fwrite_or_die(in_buffer + in_begin, 1, i - in_begin, stdout);
                 in_begin = i + 1;
             }
         }
 
-        fwrite(in_buffer + in_begin, 1, in_end - in_begin, stdout);
+        fwrite_or_die(in_buffer + in_begin, 1, in_end - in_begin, stdout);
     }
 }
 
 
 int main(void)
 {
+    tool_name = "seq-merge-lines";
     atexit(done);
     change_io_to_binary_mode();
     allocate_in_buffer();
