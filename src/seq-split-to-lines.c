@@ -15,6 +15,7 @@ static unsigned long long line_length = 0ull;
 static void done(void)
 {
     free_in_buffer();
+    fclose_or_die(stdout);
 }
 
 
@@ -32,33 +33,34 @@ static void process(void)
         {
             unsigned long long len1 = in_end - in_begin;
             if (len1 > line_rem) { len1 = line_rem; }
-            fwrite(in_buffer, 1, len1, stdout);
-            fputc(10, stdout);
+            fwrite_or_die(in_buffer, 1, len1, stdout);
+            fputc_or_die(10, stdout);
             in_begin += len1;
             line_rem -= len1;
         }
 
         for (size_t i = in_begin + line_length; i <= in_end; i += line_length)
         {
-            fwrite(in_buffer + in_begin, 1, line_length, stdout);
-            fputc(10, stdout);
+            fwrite_or_die(in_buffer + in_begin, 1, line_length, stdout);
+            fputc_or_die(10, stdout);
             in_begin = i;
         }
 
         if (in_begin < in_end)
         {
             unsigned long long len1 = in_end - in_begin;
-            fwrite(in_buffer + in_begin, 1, len1, stdout);
+            fwrite_or_die(in_buffer + in_begin, 1, len1, stdout);
             line_rem = line_length - len1;
         }
     }
 
-    if (line_rem != 0 && line_rem != line_length) { fputc(10, stdout); }
+    if (line_rem != 0 && line_rem != line_length) { fputc_or_die(10, stdout); }
 }
 
 
 int main(int argc, char **argv)
 {
+    tool_name = "seq-split-to-lines";
     atexit(done);
 
     for (int i = 1; i < argc; i++)
@@ -67,10 +69,9 @@ int main(int argc, char **argv)
         {
             if (!strcmp(argv[i], "--line-length")) { i++; line_length = strtoull(argv[i], NULL, 10); continue; }
         }
-        fprintf(stderr, "Unknown or incomplete argument \"%s\"\n", argv[i]);
-        exit(1);
+        die("Unknown or incomplete argument \"%s\"\n", argv[i]);
     }
-    if (line_length == 0ull) { fputs("seq-split-to-lines error: line length is not specified\n", stderr); exit(1); }
+    if (line_length == 0ull) { die("Line length is not specified\n"); }
 
     change_io_to_binary_mode();
     allocate_in_buffer();

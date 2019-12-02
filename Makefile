@@ -11,8 +11,8 @@ tools := seq-t2u seq-u2t seq-merge-lines seq-split-to-lines seq-change-case-to-u
 
 default: $(addprefix bin/, $(tools))
 
-bin/%: src/%.c | bin
-	$(CC) $(CFLAGS) -o $@ $^
+bin/%: src/%.c src/common.c | bin
+	$(CC) $(CFLAGS) -o $@ $<
 
 bin:
 	-mkdir bin
