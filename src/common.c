@@ -8,6 +8,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <stdbool.h>
+
+#ifdef __MINGW32__
+#include <fcntl.h>
+#endif
 
 
 #if defined(__MINGW32__) || defined(__MINGW64__) || defined(_WIN32) || defined(_WIN64) || defined(WIN32) || defined(WIN64)
@@ -24,7 +29,7 @@ static unsigned char *in_buffer = NULL;
 static size_t in_begin = 0;
 static size_t in_end = 0;
 
-static char *tool_name = "seq-tools";
+static const char *tool_name = "seq-tools";
 
 
 __attribute__ ((cold))
@@ -73,8 +78,19 @@ static void free_in_buffer(void)
 
 static void change_io_to_binary_mode(void)
 {
-    if (!freopen(NULL, "rb", stdin)) { die("Can't read input in binary mode\n"); }
-    if (!freopen(NULL, "wb", stdout)) { die("Can't set output stream to binary mode\n"); }
+#ifdef __MINGW32__
+    if (_setmode(_fileno(stdout), O_BINARY) == -1)
+#else
+    if (!freopen(NULL, "wb", stdout))
+#endif
+        { die("Can't set output stream to binary mode\n"); }
+
+#ifdef __MINGW32__
+    if (_setmode(_fileno(stdin), O_BINARY) == -1)
+#else
+    if (!freopen(NULL, "rb", stdin))
+#endif
+        { die("can't read input in binary mode\n"); }
 }
 
 
