@@ -29,15 +29,13 @@ static unsigned char *in_buffer = NULL;
 static size_t in_begin = 0;
 static size_t in_end = 0;
 
-static const char *tool_name = "seq-tools";
-
 
 __attribute__ ((cold))
 __attribute__ ((format (printf, 1, 2)))
 __attribute__ ((noreturn))
 static void die(const char *format, ...) 
 {
-    fprintf(stderr, "%s error: ", tool_name);
+    fputs(TOOL_NAME " error: ", stderr);
     va_list argptr;
     va_start(argptr, format);
     vfprintf(stderr, format, argptr);

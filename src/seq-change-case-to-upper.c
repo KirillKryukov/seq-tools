@@ -6,6 +6,7 @@
  * Usage: seq-change-case-to-upper <in.seq >out.seq
  */
 
+#define TOOL_NAME "seq-change-case-to-upper"
 #include "common.c"
 
 
@@ -35,7 +36,6 @@ static void process(void)
 
 int main(void)
 {
-    tool_name = "seq-change-case-to-upper";
     atexit(done);
     change_io_to_binary_mode();
     allocate_in_buffer();

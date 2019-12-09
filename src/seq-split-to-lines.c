@@ -6,6 +6,7 @@
  * Usage: seq-split-to-lines --line-length 100 <in.seq >out.seq
  */
 
+#define TOOL_NAME "seq-split-to-lines"
 #include "common.c"
 
 
@@ -60,7 +61,6 @@ static void process(void)
 
 int main(int argc, char **argv)
 {
-    tool_name = "seq-split-to-lines";
     atexit(done);
 
     for (int i = 1; i < argc; i++)

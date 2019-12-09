@@ -6,6 +6,7 @@
  * Usage: seq-merge-lines <in.seq >out.seq
  */
 
+#define TOOL_NAME "seq-merge-lines"
 #include "common.c"
 
 
@@ -40,7 +41,6 @@ static void process(void)
 
 int main(void)
 {
-    tool_name = "seq-merge-lines";
     atexit(done);
     change_io_to_binary_mode();
     allocate_in_buffer();

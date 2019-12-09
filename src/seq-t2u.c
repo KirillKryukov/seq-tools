@@ -6,6 +6,7 @@
  * Usage: seq-t2u <in.seq >out.seq
  */
 
+#define TOOL_NAME "seq-t2u"
 #include "common.c"
 
 
@@ -35,7 +36,6 @@ static void process(void)
 
 int main(void)
 {
-    tool_name = "seq-t2u";
     atexit(done);
     change_io_to_binary_mode();
     allocate_in_buffer();

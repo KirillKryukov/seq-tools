@@ -6,6 +6,7 @@
  * Usage: seq-u2t <in.seq >out.seq
  */
 
+#define TOOL_NAME "seq-u2t"
 #include "common.c"
 
 
@@ -35,7 +36,6 @@ static void process(void)
 
 int main(void)
 {
-    tool_name = "seq-u2t";
     atexit(done);
     change_io_to_binary_mode();
     allocate_in_buffer();
