@@ -1,0 +1,1 @@
+0 {seq-split-to-lines} --line-length 10 <{GROUP}.seq | {seq-merge-lines} >{TEST}.seq.out

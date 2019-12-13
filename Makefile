@@ -12,7 +12,7 @@ CFLAGS = -std=c99 \
          -Wc++-compat -Wstrict-aliasing=1 -Wvla -Winit-self -Wwrite-strings \
          -O3 -march=native -ffast-math -s
 
-.PHONY: default all clean
+.PHONY: default all check test clean
 
 tools := seq-t2u seq-u2t seq-merge-lines seq-split-to-lines seq-change-case-to-upper \
          seq-soft-mask-bin-extract
@@ -23,10 +23,16 @@ bin/%: src/%.c src/common.c | bin
 	$(CC) $(CFLAGS) -o $@ $<
 
 bin:
-	-mkdir bin
+	-mkdir -p bin
 
 all: default
 
 clean:
 	-rm -f bin/*
 	-rmdir bin
+	$(MAKE) -C tests clean
+
+check: test
+
+test:
+	$(MAKE) -C tests
