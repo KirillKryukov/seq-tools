@@ -6,7 +6,6 @@
 #
 
 use strict;
-use Cwd qw(abs_path);
 use File::Basename qw(basename dirname);
 use File::Glob qw(:bsd_glob);
 
@@ -20,7 +19,6 @@ my $null = ($^O =~ /MSWin/) ? 'nul' : '/dev/null';
 my ($n_tests_total, $n_tests_passed) = (0, 0);
 
 my @tools = grep { $_ ne 'common' } map { $_ = basename($_); s/\.c$//; $_; } bsd_glob("..${sep}src${sep}*.c");
-print join(', ', @tools), "\n";
 
 foreach my $test (@tests)
 {

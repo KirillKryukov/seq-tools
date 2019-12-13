@@ -12,12 +12,14 @@ CFLAGS = -std=c99 \
          -Wc++-compat -Wstrict-aliasing=1 -Wvla -Winit-self -Wwrite-strings \
          -O3 -march=native -ffast-math -s
 
-.PHONY: default all check test clean
+.PHONY: binaries default all check test clean
 
 tools := seq-t2u seq-u2t seq-merge-lines seq-split-to-lines seq-change-case-to-upper \
          seq-soft-mask-bin-extract
 
-default: $(addprefix bin/, $(tools))
+binaries: $(addprefix bin/, $(tools))
+
+default: binaries
 
 bin/%: src/%.c src/common.c | bin
 	$(CC) $(CFLAGS) -o $@ $<
@@ -34,5 +36,5 @@ clean:
 
 check: test
 
-test:
+test: binaries
 	$(MAKE) -C tests

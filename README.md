@@ -43,6 +43,31 @@ Naturally, please be aware of numerous other toolkits that may or may not better
 [seqmagick](https://fhcrc.github.io/seqmagick/),
 [Fasta Utilities](https://github.com/jimhester/fasta_utilities).
 
+## Installing
+
+Prerequisites: git, gcc, make, diff, perl (diff and perl are only used for test suite).
+E.g., to install on Ubuntu: `sudo apt install git gcc make diffutils perl`.
+On Mac OS you may have to install Xcode Command Line Tools.
+
+Building from source:
+
+```
+git clone https://github.com/KirillKryukov/seq-tools.git
+cd seq-tools && make && make test
+```
+
+The binaries will be produced in the `bin` directory.
+Currently they are not auto-installed, feel free to copy them into destination of your choice (such as `/usr/bin`),
+ or to add their directory into PATH.
+
+Building from latest unreleased source (for testing purpose only):
+
+```
+git clone --branch develop https://github.com/KirillKryukov/seq-tools.git
+cd seq-tools && make && make test
+```
+
+
 ## Synopsis
 
 `seq-t2u <in.seq >out.seq` - Convert T to U.
@@ -54,6 +79,9 @@ Naturally, please be aware of numerous other toolkits that may or may not better
 `seq-split-to-lines --line-length 100 <in.seq >out.seq` - Split single-line sequence into lines.
 
 `seq-change-case-to-upper <in.seq >out.seq` - Converts sequence to uppercase.
+
+`seq-soft-mask-bin-extract --mask out.mask <in.seq >out.seq` - Separates mask (positions of lower case characters) from sequence.
+Outputs sequence without mask (all in upper case).
 
 ## File formats
 
