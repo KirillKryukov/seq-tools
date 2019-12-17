@@ -1,0 +1,7 @@
+language: c
+
+matrix:
+  fast_finish: true
+  include:
+  - name: General build test
+    script: make && make check && make coverage
