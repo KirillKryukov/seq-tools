@@ -53,34 +53,38 @@ Building from source:
 
 ```
 git clone https://github.com/KirillKryukov/seq-tools.git
-cd seq-tools && make && make test
+cd seq-tools && make && make test && sudo make install
 ```
-
-The binaries will be produced in the `bin` directory.
-Currently they are not auto-installed, feel free to copy them into destination of your choice (such as `/usr/bin`),
- or to add their directory into PATH.
 
 Building from latest unreleased source (for testing purpose only):
 
 ```
 git clone --branch develop https://github.com/KirillKryukov/seq-tools.git
-cd seq-tools && make && make test
+cd seq-tools && make && make test && sudo make install
 ```
+
+To install in alternative location, add "prefix=DIR" to the "make install" command. E.g., `sudo make prefix=/usr/local/bio install`
+
+For a staged install, add "DESTDIR=DIR". E.g., `make DESTDIR=/tmp/stage install`
+
+On Windows it can be installed using [Cygwin](https://www.cygwin.com/),
+and should be also possible with [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+In Cygwin drop `sudo`: `cd seq-tools && make && make test && make install`
 
 
 ## Synopsis
 
-`seq-t2u <in.seq >out.seq` - Convert T to U.
+`seq-tools seq-t2u <in.seq >out.seq` - Convert T to U.
 
-`seq-u2t <in.seq >out.seq` - Convert U to T.
+`seq-tools seq-u2t <in.seq >out.seq` - Convert U to T.
 
-`seq-merge-lines <in.seq >out.seq` - Remove end-of-line characters.
+`seq-tools seq-change-case-to-upper <in.seq >out.seq` - Converts sequence to uppercase.
 
-`seq-split-to-lines --line-length 100 <in.seq >out.seq` - Split single-line sequence into lines.
+`seq-tools seq-merge-lines <in.seq >out.seq` - Remove end-of-line characters.
 
-`seq-change-case-to-upper <in.seq >out.seq` - Converts sequence to uppercase.
+`seq-tools seq-split-to-lines --line-length 100 <in.seq >out.seq` - Split single-line sequence into lines.
 
-`seq-soft-mask-bin-extract --mask out.mask <in.seq >out.seq` - Separates mask (positions of lower case characters) from sequence.
+`seq-tools seq-soft-mask-bin-extract --mask out.mask <in.seq >out.seq` - Separates mask (positions of lower case characters) from sequence.
 Outputs sequence without mask (all in upper case).
 
 ## File formats

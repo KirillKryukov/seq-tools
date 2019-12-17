@@ -1,6 +1,8 @@
 .POSIX:
 .SUFFIXES:
 
+export prefix = /usr/local
+
 CC = cc
 CFLAGS = -std=c99 \
          -Wall -Wextra -Wpedantic -Wstrict-prototypes -Wmissing-prototypes \
@@ -12,29 +14,48 @@ CFLAGS = -std=c99 \
          -Wc++-compat -Wstrict-aliasing=1 -Wvla -Winit-self -Wwrite-strings \
          -O3 -march=native -ffast-math -s
 
-.PHONY: binaries default all check test clean
+.PHONY: default all mockobjs check test coverage clean install uninstall
 
-tools := seq-t2u seq-u2t seq-merge-lines seq-split-to-lines seq-change-case-to-upper \
-         seq-soft-mask-bin-extract
+MOCKS := fclose
 
-binaries: $(addprefix bin/, $(tools))
+BINARY := seq-tools
 
-default: binaries
-
-bin/%: src/%.c src/common.c | bin
-	$(CC) $(CFLAGS) -o $@ $<
-
-bin:
-	-mkdir -p bin
+default: $(BINARY)
 
 all: default
 
-clean:
-	-rm -f bin/*
-	-rmdir bin
-	$(MAKE) -C tests clean
+$(BINARY): src/seq-tools.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+mockobjs: $(addsuffix .so, $(addprefix so/, $(MOCKS)))
+
+so/%.so: src/mocks/%.c | so
+	$(CC) $(CFLAGS) -shared -o $@ $<
+
+so:
+	@mkdir -p so
 
 check: test
 
-test: binaries
-	$(MAKE) -C tests
+test: $(BINARY) mockobjs
+	@$(MAKE) -C tests
+
+# Coverage does not actually depend on normally built binary,
+# but still it should be tested only after normal built succeeds.
+coverage: $(BINARY) mockobjs
+	@$(MAKE) -C coverage
+
+clean:
+	@rm -f seq-tools
+	@rm -f so/*
+	@rm -df so
+	@$(MAKE) -C tests clean
+	@$(MAKE) -C coverage clean
+	@echo "All clean!"
+
+install: $(BINARY)
+	@mkdir -p $(DESTDIR)$(prefix)/bin
+	cp -f $(BINARY) $(DESTDIR)$(prefix)/bin
+
+uninstall:
+	rm -f $(DESTDIR)$(prefix)/bin/$(BINARY)

@@ -1,0 +1,1 @@
+1 {SEQ-TOOLS} test-dummy --binary-stdin >{TEST}.out 2>{TEST}.err

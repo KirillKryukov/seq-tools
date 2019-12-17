@@ -1,1 +1,1 @@
-0 {seq-t2u} <{GROUP}.seq >{TEST}.seq.out
+0 {SEQ-TOOLS} seq-t2u <{GROUP}.seq >{TEST}.seq.out

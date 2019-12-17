@@ -1,0 +1,1 @@
+1 {SEQ-TOOLS} test-dummy --fwrite >{TEST}.out 2>{TEST}.err

@@ -1,1 +1,1 @@
-0 {seq-change-case-to-upper} <{GROUP}.seq >{TEST}.seq.out
+0 {SEQ-TOOLS} seq-change-case-to-upper <{GROUP}.seq >{TEST}.seq.out
