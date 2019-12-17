@@ -4,6 +4,15 @@ A set of tools for sequence conversion and processing.
 Each tool is dedicated to single task on specific kind of data.
 These tools are super-fast, use constant RAM, and scale to huge data sizes.
 
+|Branch      |Status   |
+|------------|---------|
+|master      | [![Build Status][travisMasterBadge]][travisLink] |
+|develop     | [![Build Status][travisDevBadge]][travisLink] |
+
+[travisMasterBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=master "Continuous Integration test suite"
+[travisDevelopBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=develop "Continuous Integration test suite"
+[travisLink]: https://travis-ci.org/KirillKryukov/seq-tools
+
 ## Motivation
 
 When faced with a simple sequence-processing task, normally we just throw a grep/sed/awk one-liner,
