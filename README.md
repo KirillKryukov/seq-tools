@@ -7,7 +7,7 @@ These tools are super-fast, use constant RAM, and scale to huge data sizes.
 |Branch      |Status   |
 |------------|---------|
 |master      | [![Build Status][travisMasterBadge]][travisLink] |
-|develop     | [![Build Status][travisDevBadge]][travisLink] |
+|develop     | [![Build Status][travisDevelopBadge]][travisLink] |
 
 [travisMasterBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=master "Continuous Integration test suite"
 [travisDevelopBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=develop "Continuous Integration test suite"
