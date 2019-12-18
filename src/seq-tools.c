@@ -6,10 +6,11 @@
 
 #define SOFTWARE_NAME "seq-tools"
 #define VERSION "0.1.0"
-#define DATE "2019-12-17"
+#define DATE "2019-12-18"
 #define COPYRIGHT_YEARS "2019"
 
 
+#include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -74,10 +75,7 @@ __attribute__ ((malloc))
 __attribute__ ((alloc_size (1)))
 static void* malloc_or_die(const size_t size)
 {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Walloc-size-larger-than="
     void *buf = malloc(size);
-#pragma GCC diagnostic pop
     if (buf == NULL) { out_of_memory(size); }
     return buf;
 }
@@ -190,10 +188,7 @@ static void tool_test_dummy(int n_args, char **args)
     const char *task = args[0];
     if (strcmp(task, "--out-of-memory") == 0)
     {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Walloc-size-larger-than="
-        malloc_or_die(SIZE_MAX);
-#pragma GCC diagnostic pop
+        malloc_or_die(12345);
     }
     else if (strcmp(task, "--binary-stdin") == 0)
     {

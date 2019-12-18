@@ -1,8 +1,7 @@
 # seq-tools
 
 A set of tools for sequence conversion and processing.
-Each tool is dedicated to single task on specific kind of data.
-These tools are super-fast, use constant RAM, and scale to huge data sizes.
+These toolkit is super-fast, uses constant RAM, and scales to huge data sizes.
 
 |Branch      |Status   |
 |------------|---------|
@@ -20,17 +19,16 @@ or a trivial perl/python/ruby script.
 In rare cases when more performance is needed, we may check existing tools such as seqtk.
 (Finding and installing a suitable tool and looking up its usage typically takes longer time than writing a script by yourself).
 
-However, every once in a while your project may have unique sequence processing needs:
+However, every once in a while your project may need sequence transformation that:
 
-* A simple transformation of sequence data.
-* It has to be extremely fast and scale to massive data.
-* It has to integrate smoothly into a pipeline.
-* It has to have constant and nearly invisible memory footprint.
-* The data is pre-validated or otherwise under your control.
+* Is extremely fast and scale to massive data.
+* Integrates smoothly into a pipeline.
+* Has constant and nearly invisible memory footprint.
+* Works with pre-validated data.
 
-For such cases you are welcome to try some of these tools.
+For such cases you are welcome to try seq-tools.
 
-Note that this repo only has tools that I personally needed myself in the past.
+Note that this toolkit only includes functionality that I needed myself in the past.
 If your required task is not covered, but is sufficiently simple,
 and has no available super-fast tool, please post a request in the Issues.
 
@@ -40,8 +38,7 @@ and has no available super-fast tool, please post a request in the Issues.
 These tools are very fast and have minimal memory consumption.
 
 **Simplicity:**
-Each tool performs single task.
-These tools are simple, and coded in plain C with no dependencies.
+This toolkit is simple, and coded in plain C with no dependencies.
 
 ## Alternatives
 
