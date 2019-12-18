@@ -30,7 +30,7 @@ $(BINARY): src/seq-tools.c
 mockobjs: $(addsuffix .so, $(addprefix so/, $(MOCKS)))
 
 so/%.so: src/mocks/%.c | so
-	$(CC) $(CFLAGS) -shared -o $@ $<
+	$(CC) $(CFLAGS) -fPIC -shared -o $@ $<
 
 so:
 	@mkdir -p so
