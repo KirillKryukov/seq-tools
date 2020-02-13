@@ -16,7 +16,7 @@ CFLAGS = -std=c99 \
 
 .PHONY: default all mockobjs check test coverage clean install uninstall
 
-MOCKS := fclose malloc
+MOCKS := fclose fputc fwrite malloc
 
 BINARY := seq-tools
 

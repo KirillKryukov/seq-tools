@@ -6,8 +6,8 @@
 
 #define SOFTWARE_NAME "seq-tools"
 #define VERSION "0.1.0"
-#define DATE "2019-12-18"
-#define COPYRIGHT_YEARS "2019"
+#define DATE "2020-02-13"
+#define COPYRIGHT_YEARS "2019-2020"
 
 
 #include <stddef.h>
@@ -38,8 +38,9 @@ static size_t in_end = 0;
 
 static const char* tool_name = NULL;
 
-#define n_files_to_close 1
-static FILE* files_to_close[n_files_to_close] = {NULL};
+#define MAX_N_FILES_TO_CLOSE 2u
+static unsigned n_files_to_close = 0;
+static FILE* files_to_close[MAX_N_FILES_TO_CLOSE] = { NULL, NULL };
 
 
 __attribute__ ((cold))
@@ -60,6 +61,14 @@ static void die(const char *format, ...)
     va_end(argptr);
     fputc('\n', stderr);
     exit(1);
+}
+
+
+static void register_file_to_close(FILE* f)
+{
+    if (n_files_to_close >= MAX_N_FILES_TO_CLOSE) { die("Can't register file closing handler, opened too many files"); }
+    files_to_close[n_files_to_close] = f;
+    n_files_to_close++;
 }
 
 
@@ -84,8 +93,6 @@ static void* malloc_or_die(const size_t size)
 static void allocate_in_buffer(void)
 {
     in_buffer = (unsigned char *) malloc_or_die(in_buffer_size);
-    (void)in_begin;
-    (void)in_end;
 }
 
 
@@ -164,7 +171,6 @@ static void done(void)
     }
 
     free_in_buffer();
-    fclose_or_die(stdout);
 }
 
 
@@ -174,6 +180,8 @@ static void unknown_tool(void)
 }
 
 
+__attribute__ ((cold))
+__attribute__ ((noreturn))
 static void tool_test_dummy(int n_args, char **args)
 {
     if (n_args < 1)
@@ -188,7 +196,8 @@ static void tool_test_dummy(int n_args, char **args)
     const char *task = args[0];
     if (strcmp(task, "--out-of-memory") == 0)
     {
-        malloc_or_die(12345);
+        void *t = malloc_or_die(12345);
+        free(t);
     }
     else if (strcmp(task, "--binary-stdin") == 0)
     {
@@ -202,29 +211,27 @@ static void tool_test_dummy(int n_args, char **args)
     }
     else if (strcmp(task, "--fputc") == 0)
     {
-        fclose(stdout);
-        fputc_or_die('A', stdout);
+        fputc_or_die(0, stdout);
     }
     else if (strcmp(task, "--fwrite") == 0)
     {
-        fclose(stdout);
         fwrite_or_die("A", 1, 1, stdout);
     }
     else if (strcmp(task, "--fclose") == 0)
     {
         fclose_or_die(stdout);
     }
+    else
+    {
+        die("Unknown task: \"%s\"", task);
+    }
 
-    die("Unknown task: \"%s\"", task);
+    exit(0);
 }
 
 
 static void tool_seq_t2u(void)
 {
-    atexit(done);
-    change_io_to_binary_mode();
-    allocate_in_buffer();
-
     for (;;)
     {
         in_end = fread(in_buffer, 1, in_buffer_size, stdin);
@@ -245,10 +252,6 @@ static void tool_seq_t2u(void)
 
 static void tool_seq_u2t(void)
 {
-    atexit(done);
-    change_io_to_binary_mode();
-    allocate_in_buffer();
-
     for (;;)
     {
         in_end = fread(in_buffer, 1, in_buffer_size, stdin);
@@ -269,10 +272,6 @@ static void tool_seq_u2t(void)
 
 static void tool_seq_change_case_to_upper(void)
 {
-    atexit(done);
-    change_io_to_binary_mode();
-    allocate_in_buffer();
-
     for (;;)
     {
         in_end = fread(in_buffer, 1, in_buffer_size, stdin);
@@ -293,10 +292,6 @@ static void tool_seq_change_case_to_upper(void)
 
 static void tool_seq_merge_lines(void)
 {
-    atexit(done);
-    change_io_to_binary_mode();
-    allocate_in_buffer();
-
     for (;;)
     {
         in_begin = 0;
@@ -322,10 +317,6 @@ static void tool_seq_merge_lines(void)
 
 static void tool_seq_split_to_lines(int n_args, char **args)
 {
-    atexit(done);
-    change_io_to_binary_mode();
-    allocate_in_buffer();
-
     bool line_length_is_specified = false;
     unsigned long long line_length = 0ull;
 
@@ -400,10 +391,6 @@ static void tool_seq_split_to_lines(int n_args, char **args)
 
 static void tool_seq_soft_mask_bin_extract(int n_args, char **args)
 {
-    atexit(done);
-    change_io_to_binary_mode();
-    allocate_in_buffer();
-
     char *mask_path = NULL;
     FILE *MASK = NULL;
     bool masked = false;
@@ -432,7 +419,7 @@ static void tool_seq_soft_mask_bin_extract(int n_args, char **args)
     {
         die("Can't create mask file\n");
     }
-    files_to_close[0] = MASK;
+    register_file_to_close(MASK);
 
     do
     {
@@ -455,7 +442,10 @@ static void tool_seq_soft_mask_bin_extract(int n_args, char **args)
     }
     while (in_end > 0);
 
-    if (length > 0) { fwrite_or_die(&length, sizeof(length), 1, MASK); }
+    if (length > 0)
+    {
+        fwrite_or_die(&length, sizeof(length), 1, MASK);
+    }
 }
 
 
@@ -468,7 +458,17 @@ int main(int argc, char **argv)
 
     tool_name = argv[1];
     int n_args = argc - 2;
-    char **args = argv + 2;
+    char **args = (argc > 2) ? (argv + 2) : NULL;
+
+    if (strcmp(tool_name, "test-dummy") == 0)
+    {
+        tool_test_dummy(n_args, args);
+    }
+
+    atexit(done);
+    change_io_to_binary_mode();
+    register_file_to_close(stdout);
+    allocate_in_buffer();
 
     if (strncmp(tool_name, "seq-", 4) == 0)
     {
@@ -501,10 +501,6 @@ int main(int argc, char **argv)
         {
             unknown_tool();
         }
-    }
-    else if (strcmp(tool_name, "test-dummy") == 0)
-    {
-        tool_test_dummy(n_args, args);
     }
     else
     {
