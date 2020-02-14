@@ -93,6 +93,8 @@ In Cygwin drop `sudo`: `cd seq-tools && make && make test && make install`
 `seq-tools seq-soft-mask-bin-extract --mask out.mask <in.seq >out.seq` - Separates mask (positions of lower case characters) from sequence.
 Outputs sequence without mask (all in upper case).
 
+`seq-tools seq-soft-mask-bin-add --mask in.mask <in.seq >out.seq` - Masks sequence (changes to lowercase) according to in.mask.
+
 ## File formats
 
 **Sequence:** A text file containing only ASCII characters a-z and A-Z.

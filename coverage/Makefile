@@ -18,7 +18,7 @@ seq-tools.c.gcov: seq-tools.gcda seq-tools.gcno
 seq-tools%gcda seq-tools%gcno: seq-tools
 	@rm -f ../tests/*/*.out
 	@rm -f ../tests/*/*.err
-	../tests/test-runner.pl --bindir . --testdir ../tests 20k errors ascii
+	../tests/test-runner.pl --bindir . --testdir ../tests 20k ascii errors small
 
 seq-tools: ../src/seq-tools.c
 	$(CC) $(CFLAGS) -o $@ $<
