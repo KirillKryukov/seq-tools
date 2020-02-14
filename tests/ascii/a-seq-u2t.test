@@ -1,0 +1,1 @@
+0 {SEQ-TOOLS} seq-u2t <{GROUP}.seq >{TEST}.seq.out

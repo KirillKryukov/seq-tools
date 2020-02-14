@@ -1,0 +1,1 @@
+0 {SEQ-TOOLS} seq-split-to-lines --line-length 10 <{GROUP}.seq >{TEST}.seq.out

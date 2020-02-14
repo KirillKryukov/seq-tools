@@ -1,0 +1,1 @@
+1 LD_PRELOAD={MOCK_OBJ_DIR}/fclose.so {SEQ-TOOLS} test-dummy --fclose >{TEST}.out 2>{TEST}.err

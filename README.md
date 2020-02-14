@@ -1,8 +1,16 @@
 # seq-tools
 
 A set of tools for sequence conversion and processing.
-Each tool is dedicated to single task on specific kind of data.
-These tools are super-fast, use constant RAM, and scale to huge data sizes.
+These toolkit is super-fast, uses constant RAM, and scales to huge data sizes.
+
+|Branch      |Status   |
+|------------|---------|
+|master      | [![Build Status][travisMasterBadge]][travisLink] |
+|develop     | [![Build Status][travisDevelopBadge]][travisLink] |
+
+[travisMasterBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=master "Continuous Integration test suite"
+[travisDevelopBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=develop "Continuous Integration test suite"
+[travisLink]: https://travis-ci.org/KirillKryukov/seq-tools
 
 ## Motivation
 
@@ -11,17 +19,16 @@ or a trivial perl/python/ruby script.
 In rare cases when more performance is needed, we may check existing tools such as seqtk.
 (Finding and installing a suitable tool and looking up its usage typically takes longer time than writing a script by yourself).
 
-However, every once in a while your project may have unique sequence processing needs:
+However, every once in a while your project may need sequence transformation that:
 
-* A simple transformation of sequence data.
-* It has to be extremely fast and scale to massive data.
-* It has to integrate smoothly into a pipeline.
-* It has to have constant and nearly invisible memory footprint.
-* The data is pre-validated or otherwise under your control.
+* Is extremely fast and scale to massive data.
+* Integrates smoothly into a pipeline.
+* Has constant and nearly invisible memory footprint.
+* Works with pre-validated data.
 
-For such cases you are welcome to try some of these tools.
+For such cases you are welcome to try seq-tools.
 
-Note that this repo only has tools that I personally needed myself in the past.
+Note that this toolkit only includes functionality that I needed myself in the past.
 If your required task is not covered, but is sufficiently simple,
 and has no available super-fast tool, please post a request in the Issues.
 
@@ -31,8 +38,7 @@ and has no available super-fast tool, please post a request in the Issues.
 These tools are very fast and have minimal memory consumption.
 
 **Simplicity:**
-Each tool performs single task.
-These tools are simple, and coded in plain C with no dependencies.
+This toolkit is simple, and coded in plain C with no dependencies.
 
 ## Alternatives
 
@@ -43,17 +49,51 @@ Naturally, please be aware of numerous other toolkits that may or may not better
 [seqmagick](https://fhcrc.github.io/seqmagick/),
 [Fasta Utilities](https://github.com/jimhester/fasta_utilities).
 
+## Installing
+
+Prerequisites: git, gcc, make, diff, perl (diff and perl are only used for test suite).
+E.g., to install on Ubuntu: `sudo apt install git gcc make diffutils perl`.
+On Mac OS you may have to install Xcode Command Line Tools.
+
+Building from source:
+
+```
+git clone https://github.com/KirillKryukov/seq-tools.git
+cd seq-tools && make && make test && sudo make install
+```
+
+Building from latest unreleased source (for testing purpose only):
+
+```
+git clone --branch develop https://github.com/KirillKryukov/seq-tools.git
+cd seq-tools && make && make test && sudo make install
+```
+
+To install in alternative location, add "prefix=DIR" to the "make install" command. E.g., `sudo make prefix=/usr/local/bio install`
+
+For a staged install, add "DESTDIR=DIR". E.g., `make DESTDIR=/tmp/stage install`
+
+On Windows it can be installed using [Cygwin](https://www.cygwin.com/),
+and should be also possible with [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+In Cygwin drop `sudo`: `cd seq-tools && make && make test && make install`
+
+
 ## Synopsis
 
-`seq-t2u <in.seq >out.seq` - Convert T to U.
+`seq-tools seq-t2u <in.seq >out.seq` - Convert T to U.
 
-`seq-u2t <in.seq >out.seq` - Convert U to T.
+`seq-tools seq-u2t <in.seq >out.seq` - Convert U to T.
 
-`seq-merge-lines <in.seq >out.seq` - Remove end-of-line characters.
+`seq-tools seq-change-case-to-upper <in.seq >out.seq` - Converts sequence to uppercase.
 
-`seq-split-to-lines --line-length 100 <in.seq >out.seq` - Split single-line sequence into lines.
+`seq-tools seq-merge-lines <in.seq >out.seq` - Remove end-of-line characters.
 
-`seq-change-case-to-upper <in.seq >out.seq` - Converts sequence to uppercase.
+`seq-tools seq-split-to-lines --line-length 100 <in.seq >out.seq` - Split single-line sequence into lines.
+
+`seq-tools seq-soft-mask-bin-extract --mask out.mask <in.seq >out.seq` - Separates mask (positions of lower case characters) from sequence.
+Outputs sequence without mask (all in upper case).
+
+`seq-tools seq-soft-mask-bin-add --mask in.mask <in.seq >out.seq` - Masks sequence (changes to lowercase) according to in.mask.
 
 ## File formats
 

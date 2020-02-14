@@ -1,0 +1,1 @@
+1 LD_PRELOAD={MOCK_OBJ_DIR}/fputc.so {SEQ-TOOLS} test-dummy --fputc >{TEST}.out 2>{TEST}.err

@@ -1,0 +1,1 @@
+1 LD_PRELOAD={MOCK_OBJ_DIR}/malloc.so {SEQ-TOOLS} test-dummy --out-of-memory >{TEST}.out 2>{TEST}.err

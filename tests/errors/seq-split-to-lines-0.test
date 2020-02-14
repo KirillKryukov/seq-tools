@@ -1,0 +1,1 @@
+1 {SEQ-TOOLS} seq-split-to-lines --line-length 0 >{TEST}.out 2>{TEST}.err
