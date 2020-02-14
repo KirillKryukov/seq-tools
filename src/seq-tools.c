@@ -6,7 +6,7 @@
 
 #define SOFTWARE_NAME "seq-tools"
 #define VERSION "0.1.0"
-#define DATE "2020-02-13"
+#define DATE "2020-02-14"
 #define COPYRIGHT_YEARS "2019-2020"
 
 
