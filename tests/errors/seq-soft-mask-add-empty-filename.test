@@ -1,0 +1,1 @@
+1 {SEQ-TOOLS} seq-soft-mask-add --mask "" <{GROUP}.seq >{TEST}.out 2>{TEST}.err

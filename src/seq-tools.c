@@ -5,8 +5,8 @@
  */
 
 #define SOFTWARE_NAME "seq-tools"
-#define VERSION "0.1.0"
-#define DATE "2020-02-14"
+#define VERSION "0.1.1"
+#define DATE "2020-02-27"
 #define COPYRIGHT_YEARS "2019-2020"
 
 
@@ -397,7 +397,7 @@ static void tool_seq_split_to_lines(int n_args, char **args)
 }
 
 
-static void tool_seq_soft_mask_bin_add(int n_args, char **args)
+static void tool_seq_soft_mask_add(int n_args, char **args)
 {
     char *mask_path = NULL;
     FILE *MASK = NULL;
@@ -488,7 +488,10 @@ static void tool_seq_soft_mask_bin_add(int n_args, char **args)
             }
     
             unsigned long long len1 = in_end - in_begin;
-            if (len1 > length) { len1 = length; }
+            if (len1 > length)
+            {
+                len1 = length;
+            }
     
             for (size_t i = in_begin; i < in_begin + len1; i++)
             {
@@ -504,7 +507,7 @@ static void tool_seq_soft_mask_bin_add(int n_args, char **args)
 }
 
 
-static void tool_seq_soft_mask_bin_extract(int n_args, char **args)
+static void tool_seq_soft_mask_extract(int n_args, char **args)
 {
     char *mask_path = NULL;
     FILE *MASK = NULL;
@@ -568,6 +571,75 @@ static void tool_seq_soft_mask_bin_extract(int n_args, char **args)
 }
 
 
+static void tool_seq_hard_mask_extract(int n_args, char **args)
+{
+    char *mask_path = NULL;
+    FILE *MASK = NULL;
+
+    for (int i = 0; i < n_args; i++)
+    {
+        if (i < n_args - 1)
+        {
+            if (strcmp(args[i], "--mask") == 0)
+            {
+                i++;
+                mask_path = args[i];
+                continue;
+            }
+        }
+        die("Unknown or incomplete argument \"%s\"", args[i]);
+    }
+    if (mask_path == NULL)
+    {
+        die("Mask file is not specified");
+    }
+
+    MASK = fopen(mask_path, "wb");
+    if (MASK == NULL)
+    {
+        die("Can't create mask file");
+    }
+    register_file_to_close(MASK);
+
+    bool masked = false;
+    unsigned long long length = 0ull;
+
+    do
+    {
+        in_begin = 0;
+        in_end = fread(in_buffer, 1, in_buffer_size, stdin);
+
+        for (size_t i = 0; i < in_end; i++)
+        {
+            if ((in_buffer[i] == 'N') != masked)
+            {
+                length += i - in_begin;
+                fwrite_or_die(&length, sizeof(length), 1, MASK);
+                if (!masked)
+                {
+                    fwrite_or_die(in_buffer + in_begin, 1, i - in_begin, stdout);
+                }
+                masked = !masked;
+                length = 0ull;
+                in_begin = i;
+            }
+        }
+
+        length += in_end - in_begin;
+        if (!masked)
+        {
+            fwrite_or_die(in_buffer + in_begin, 1, in_end - in_begin, stdout);
+        }
+    }
+    while (in_end > 0);
+
+    if (length > 0)
+    {
+        fwrite_or_die(&length, sizeof(length), 1, MASK);
+    }
+}
+
+
 int main(int argc, char **argv)
 {
     if (argc < 2)
@@ -612,13 +684,17 @@ int main(int argc, char **argv)
         {
             tool_seq_split_to_lines(n_args, args);
         }
-        else if (strcmp(tool_suffix, "soft-mask-bin-add") == 0)
+        else if (strcmp(tool_suffix, "soft-mask-add") == 0)
         {
-            tool_seq_soft_mask_bin_add(n_args, args);
+            tool_seq_soft_mask_add(n_args, args);
         }
-        else if (strcmp(tool_suffix, "soft-mask-bin-extract") == 0)
+        else if (strcmp(tool_suffix, "soft-mask-extract") == 0)
         {
-            tool_seq_soft_mask_bin_extract(n_args, args);
+            tool_seq_soft_mask_extract(n_args, args);
+        }
+        else if (strcmp(tool_suffix, "hard-mask-extract") == 0)
+        {
+            tool_seq_hard_mask_extract(n_args, args);
         }
         else
         {

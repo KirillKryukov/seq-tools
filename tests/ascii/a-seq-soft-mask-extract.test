@@ -1,0 +1,1 @@
+0 {SEQ-TOOLS} seq-soft-mask-extract --mask {TEST}.mask.out <{GROUP}.seq >{TEST}.seq.out
