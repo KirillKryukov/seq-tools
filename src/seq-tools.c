@@ -508,8 +508,6 @@ static void tool_seq_soft_mask_bin_extract(int n_args, char **args)
 {
     char *mask_path = NULL;
     FILE *MASK = NULL;
-    bool masked = false;
-    unsigned long long length = 0ull;
 
     for (int i = 0; i < n_args; i++)
     {
@@ -536,23 +534,29 @@ static void tool_seq_soft_mask_bin_extract(int n_args, char **args)
     }
     register_file_to_close(MASK);
 
+    bool masked = false;
+    unsigned long long length = 0ull;
+
     do
     {
         in_end = fread(in_buffer, 1, in_buffer_size, stdin);
+        unsigned long long mask_begin = 0ull;
 
         for (size_t i = 0; i < in_end; i++)
         {
             if ((in_buffer[i] >= 96) != masked)
             {
+                length += i - mask_begin;
                 fwrite_or_die(&length, sizeof(length), 1, MASK);
                 masked = !masked;
                 length = 0ull;
+                mask_begin = i;
             }
 
             in_buffer[i] = (unsigned char)(in_buffer[i] & 0xDF);
-            length++;
         }
 
+        length += in_end - mask_begin;
         fwrite_or_die(in_buffer, 1, in_end, stdout);
     }
     while (in_end > 0);
