@@ -476,6 +476,9 @@ static void tool_seq_soft_mask_add(int n_args, char **args)
             return;
         }
 
+        // Suppressing Coverity Scan false positive.
+        // While we don't verify the value of length, we still do want to use it as loop boundary.
+        // coverity[tainted_data]
         while (length > 0)
         {
             if (in_begin >= in_end)
