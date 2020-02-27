@@ -96,7 +96,7 @@ Outputs sequence without mask (all in upper case).
 
 `seq-tools seq-soft-mask-add --mask in.mask <in.seq >out.seq` - Soft-masks sequence (changes to lowercase) according to in.mask.
 
-`seq-tools seq-hard-mask-extract --mask out.mask <in.seq >out.seq` - Removed hard mask (N) from sequence.
+`seq-tools seq-hard-mask-extract --mask out.mask <in.seq >out.seq` - Removes hard mask (N) from sequence.
 Stores mask in a file, outputs sequence without mask (shorter sequence).
 Only capital N is recognized as hard mask.
 
