@@ -1,0 +1,1 @@
+1 {SEQ-TOOLS} seq-soft-mask-extract a <{GROUP}.seq >{TEST}.out 2>{TEST}.err

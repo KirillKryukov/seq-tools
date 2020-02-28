@@ -5,3 +5,5 @@ matrix:
   include:
   - name: General build test
     script: make && make check && make coverage
+    after_success:
+    - bash <(curl -s https://codecov.io/bash) -v

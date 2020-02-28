@@ -1,1 +1,0 @@
-1 {SEQ-TOOLS} seq-soft-mask-bin-extract a <{GROUP}.seq >{TEST}.out 2>{TEST}.err
