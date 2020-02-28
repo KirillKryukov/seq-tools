@@ -101,6 +101,7 @@ Stores mask in a file, outputs sequence without mask (shorter sequence).
 Only capital "N" is recognized as hard mask.
 
 `seq-tools seq-hard-mask-add --mask in.mask <in.seq >out.seq` - Adds hard mask (stretches of "N") according to in.mask.
+Note: Don't use with untrusted mask file, as a malicious mask can cause the output to exceed your storage capacity.
 
 
 ## File formats

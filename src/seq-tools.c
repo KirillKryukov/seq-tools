@@ -254,7 +254,7 @@ static void tool_seq_t2u(void)
 
         for (size_t i = 0; i < in_end; i++)
         {
-            in_buffer[i] = (unsigned char)( in_buffer[i] ^ ((in_buffer[i] & 0xDF) == 'T') );
+            in_buffer[i] = (unsigned char)( in_buffer[i] ^ ((in_buffer[i] & 0xDFu) == 'T') );
         }
 
         fwrite_or_die(in_buffer, 1, in_end, stdout);
@@ -274,7 +274,7 @@ static void tool_seq_u2t(void)
 
         for (size_t i = 0; i < in_end; i++)
         {
-            in_buffer[i] = (unsigned char)( in_buffer[i] ^ ((in_buffer[i] & 0xDF) == 'U') );
+            in_buffer[i] = (unsigned char)( in_buffer[i] ^ ((in_buffer[i] & 0xDFu) == 'U') );
         }
 
         fwrite_or_die(in_buffer, 1, in_end, stdout);
@@ -294,7 +294,7 @@ static void tool_seq_change_case_to_upper(void)
 
         for (size_t i = 0; i < in_end; i++)
         {
-            in_buffer[i] = (unsigned char)(in_buffer[i] & 0xDF);
+            in_buffer[i] = (unsigned char)(in_buffer[i] & 0xDFu);
         }
 
         fwrite_or_die(in_buffer, 1, in_end, stdout);
@@ -560,7 +560,7 @@ static void tool_seq_hard_mask_add(int n_args, char **args)
             {
                 die("Mask is shorter than input sequence");
             }
-            return;
+            break;
         }
 
         while (length > 0)
@@ -594,9 +594,12 @@ static void tool_seq_hard_mask_add(int n_args, char **args)
             {
                 die("Mask is shorter than input sequence");
             }
-            return;
+            break;
         }
 
+        // Suppressing Coverity Scan false positive.
+        // While we don't verify the value of length, we still do want to use it as loop boundary.
+        // coverity[tainted_data]
         while (length > in_buffer_size)
         {
             fwrite(n_buffer, 1, in_buffer_size, stdout);
@@ -605,6 +608,8 @@ static void tool_seq_hard_mask_add(int n_args, char **args)
 
         fwrite(n_buffer, 1, length, stdout);
     }
+
+    free(n_buffer);
 }
 
 
@@ -657,7 +662,7 @@ static void tool_seq_soft_mask_extract(int n_args, char **args)
                 mask_begin = i;
             }
 
-            in_buffer[i] = (unsigned char)(in_buffer[i] & 0xDF);
+            in_buffer[i] = (unsigned char)(in_buffer[i] & 0xDFu);
         }
 
         length += in_end - mask_begin;
