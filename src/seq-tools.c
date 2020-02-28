@@ -6,10 +6,11 @@
 
 #define SOFTWARE_NAME "seq-tools"
 #define VERSION "0.1.1"
-#define DATE "2020-02-27"
+#define DATE "2020-02-28"
 #define COPYRIGHT_YEARS "2019-2020"
 
 
+#include <assert.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -66,7 +67,7 @@ static void die(const char *format, ...)
 
 static void register_file_to_close(FILE* f)
 {
-    if (n_files_to_close >= MAX_N_FILES_TO_CLOSE) { die("Can't register file closing handler, opened too many files"); }
+    assert(n_files_to_close < MAX_N_FILES_TO_CLOSE);
     files_to_close[n_files_to_close] = f;
     n_files_to_close++;
 }
@@ -85,7 +86,10 @@ __attribute__ ((alloc_size (1)))
 static void* malloc_or_die(const size_t size)
 {
     void *buf = malloc(size);
-    if (buf == NULL) { out_of_memory(size); }
+    if (buf == NULL)
+    {
+        out_of_memory(size);
+    }
     return buf;
 }
 
@@ -390,7 +394,8 @@ static void tool_seq_split_to_lines(int n_args, char **args)
         }
     }
 
-    if (line_rem != 0 && line_rem != line_length)
+    if ( line_rem != 0 &&
+         line_rem != line_length )
     {
         fputc_or_die(10, stdout);
     }
@@ -498,7 +503,7 @@ static void tool_seq_soft_mask_add(int n_args, char **args)
     
             for (size_t i = in_begin; i < in_begin + len1; i++)
             {
-                in_buffer[i] = (unsigned char)(in_buffer[i] | 0x20);
+                in_buffer[i] = (unsigned char)(in_buffer[i] | 0x20u);
             }
     
             fwrite(in_buffer + in_begin, 1, len1, stdout);
@@ -506,6 +511,99 @@ static void tool_seq_soft_mask_add(int n_args, char **args)
             length -= len1;
             in_begin += len1;
         }
+    }
+}
+
+
+static void tool_seq_hard_mask_add(int n_args, char **args)
+{
+    char *mask_path = NULL;
+    FILE *MASK = NULL;
+
+    for (int i = 0; i < n_args; i++)
+    {
+        if (i < n_args - 1)
+        {
+            if (strcmp(args[i], "--mask") == 0)
+            {
+                i++;
+                mask_path = args[i];
+                continue;
+            }
+        }
+        die("Unknown or incomplete argument \"%s\"", args[i]);
+    }
+    if (mask_path == NULL)
+    {
+        die("Mask file is not specified");
+    }
+
+    MASK = fopen(mask_path, "rb");
+    if (MASK == NULL)
+    {
+        die("Can't open mask file");
+    }
+    register_file_to_close(MASK);
+
+    unsigned char *n_buffer = (unsigned char *) malloc_or_die(in_buffer_size);
+    memset(n_buffer, 'N', in_buffer_size);
+
+    for (;;)
+    {
+        unsigned long long length;
+
+        // Processing unmasked sequence.
+        if (fread(&length, sizeof(length), 1, MASK) != 1)
+        {
+            if ( in_end > in_begin ||
+                 fgetc(stdin) != EOF )
+            {
+                die("Mask is shorter than input sequence");
+            }
+            return;
+        }
+
+        while (length > 0)
+        {
+            if (in_begin >= in_end)
+            {
+                refill_in_buffer();
+                if (in_end == 0)
+                {
+                    die("Input sequence is shorter than mask");
+                }
+            }
+    
+            unsigned long long len1 = in_end - in_begin;
+            if (len1 > length)
+            {
+                len1 = length;
+            }
+    
+            fwrite_or_die(in_buffer + in_begin, 1, len1, stdout);
+    
+            length -= len1;
+            in_begin += len1;
+        }
+
+        // Processing masked sequence.
+        if (fread(&length, sizeof(length), 1, MASK) != 1)
+        {
+            if ( in_end > in_begin ||
+                 fgetc(stdin) != EOF )
+            {
+                die("Mask is shorter than input sequence");
+            }
+            return;
+        }
+
+        while (length > in_buffer_size)
+        {
+            fwrite(n_buffer, 1, in_buffer_size, stdout);
+            length -= in_buffer_size;
+        }
+
+        fwrite(n_buffer, 1, length, stdout);
     }
 }
 
@@ -694,6 +792,10 @@ int main(int argc, char **argv)
         else if (strcmp(tool_suffix, "soft-mask-extract") == 0)
         {
             tool_seq_soft_mask_extract(n_args, args);
+        }
+        else if (strcmp(tool_suffix, "hard-mask-add") == 0)
+        {
+            tool_seq_hard_mask_add(n_args, args);
         }
         else if (strcmp(tool_suffix, "hard-mask-extract") == 0)
         {

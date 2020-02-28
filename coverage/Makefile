@@ -13,7 +13,7 @@ all: default
 coverage: seq-tools.c.gcov
 
 seq-tools.c.gcov: seq-tools.gcda seq-tools.gcno
-	@gcov seq-tools.c
+	@gcov -a seq-tools.c
 
 seq-tools%gcda seq-tools%gcno: seq-tools
 	@rm -f ../tests/*/*.out
