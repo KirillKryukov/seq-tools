@@ -5,12 +5,14 @@ These toolkit is super-fast, uses constant RAM, and scales to huge data sizes.
 
 |Branch      |Status   |
 |------------|---------|
-|master      | [![Build Status][travisMasterBadge]][travisLink] |
-|develop     | [![Build Status][travisDevelopBadge]][travisLink] |
+|master      | [![Build Status][TravisMasterBadge]][TravisLink] |
+|develop     | [![Build Status][TravisDevelopBadge]][TravisLink] [![Coverity][CoverityBadge]][CoverityLink] |
 
-[travisMasterBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=master "Continuous Integration test suite"
-[travisDevelopBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=develop "Continuous Integration test suite"
-[travisLink]: https://travis-ci.org/KirillKryukov/seq-tools
+[TravisMasterBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=master "Continuous Integration test suite"
+[TravisDevelopBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=develop "Continuous Integration test suite"
+[TravisLink]: https://travis-ci.org/KirillKryukov/seq-tools
+[CoverityBadge]: https://scan.coverity.com/projects/20067/badge.svg?flat=1 "Static code analysis"
+[CoverityLink]: https://scan.coverity.com/projects/kirillkryukov-seq-tools
 
 ## Motivation
 
