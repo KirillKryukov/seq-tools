@@ -5,8 +5,8 @@ These toolkit is super-fast, uses constant RAM, and scales to huge data sizes.
 
 |Branch      |Status   |
 |------------|---------|
-|master      | [![Build Status][TravisMasterBadge]][TravisLink] |
-|develop     | [![Build Status][TravisDevelopBadge]][TravisLink] [![Coverity][CoverityBadge]][CoverityLink] |
+|master      | [![Build Status][TravisMasterBadge]][TravisLink] [![codecov](https://codecov.io/gh/KirillKryukov/seq-tools/branch/master/graph/badge.svg)](https://codecov.io/gh/KirillKryukov/seq-tools) |
+|develop     | [![Build Status][TravisDevelopBadge]][TravisLink] [![codecov](https://codecov.io/gh/KirillKryukov/seq-tools/branch/develop/graph/badge.svg)](https://codecov.io/gh/KirillKryukov/seq-tools) [![Coverity][CoverityBadge]][CoverityLink] |
 
 [TravisMasterBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=master "Continuous Integration test suite"
 [TravisDevelopBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=develop "Continuous Integration test suite"
