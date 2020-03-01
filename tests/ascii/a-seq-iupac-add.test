@@ -1,0 +1,1 @@
+0 {SEQ-TOOLS} seq-iupac-extract --iupac {TEST}.iupac.out <{GROUP}.seq >{TEST}.seq-no-iupac.out && {SEQ-TOOLS} seq-iupac-add --iupac {TEST}.iupac.out <{TEST}.seq-no-iupac.out >{TEST}.seq.out
