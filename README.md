@@ -1,55 +1,21 @@
 # seq-tools
 
-A set of tools for sequence conversion and processing.
-These toolkit is super-fast, uses constant RAM, and scales to huge data sizes.
+A toolkit for DNA/RNA sequence conversion and processing.
+It's super-fast, uses constant RAM, and scales to huge data sizes.
 
 |Branch      |Status   |
 |------------|---------|
-|master      | [![Build Status][TravisMasterBadge]][TravisLink] [![codecov](https://codecov.io/gh/KirillKryukov/seq-tools/branch/master/graph/badge.svg)](https://codecov.io/gh/KirillKryukov/seq-tools) |
-|develop     | [![Build Status][TravisDevelopBadge]][TravisLink] [![codecov](https://codecov.io/gh/KirillKryukov/seq-tools/branch/develop/graph/badge.svg)](https://codecov.io/gh/KirillKryukov/seq-tools) [![Coverity][CoverityBadge]][CoverityLink] |
+|master      | [![Build Status][TravisMasterBadge]][TravisLink] [![Codecov][CodecovMasterBadge]](CodecovLink) |
+|develop     | [![Build Status][TravisDevelopBadge]][TravisLink] [![Codecov][CodecovDevelopBadge]](CodecovLink) [![Coverity][CoverityBadge]][CoverityLink] |
 
 [TravisMasterBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=master "Continuous Integration test suite"
 [TravisDevelopBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=develop "Continuous Integration test suite"
 [TravisLink]: https://travis-ci.org/KirillKryukov/seq-tools
+[CodecovMasterBadge]: https://codecov.io/gh/KirillKryukov/seq-tools/branch/master/graph/badge.svg
+[CodecovDevelopBadge]: https://codecov.io/gh/KirillKryukov/seq-tools/branch/develop/graph/badge.svg
+[CodecovLink]: https://codecov.io/gh/KirillKryukov/seq-tools
 [CoverityBadge]: https://scan.coverity.com/projects/20067/badge.svg?flat=1 "Static code analysis"
 [CoverityLink]: https://scan.coverity.com/projects/kirillkryukov-seq-tools
-
-## Motivation
-
-When faced with a simple sequence-processing task, normally we just throw a grep/sed/awk one-liner,
-or a trivial perl/python/ruby script.
-In rare cases when more performance is needed, we may check existing tools such as seqtk.
-(Finding and installing a suitable tool and looking up its usage typically takes longer time than writing a script by yourself).
-
-However, every once in a while your project may need sequence transformation that:
-
-* Is extremely fast and scale to massive data.
-* Integrates smoothly into a pipeline.
-* Has constant and nearly invisible memory footprint.
-* Works with pre-validated data.
-
-For such cases you are welcome to try seq-tools.
-
-Note that this toolkit only includes functionality that I needed myself in the past.
-If your required task is not covered, but is sufficiently simple,
-and has no available super-fast tool, please post a request in the Issues.
-
-## Features
-
-**Performance:**
-These tools are very fast and have minimal memory consumption.
-
-**Simplicity:**
-This toolkit is simple, and coded in plain C with no dependencies.
-
-## Alternatives
-
-Naturally, please be aware of numerous other toolkits that may or may not better suit your needs:
-[Seqtk](https://github.com/lh3/seqtk),
-[FASTX-Toolkit](http://hannonlab.cshl.edu/fastx_toolkit/),
-[SeqKit](https://github.com/shenwei356/seqkit),
-[seqmagick](https://fhcrc.github.io/seqmagick/),
-[Fasta Utilities](https://github.com/jimhester/fasta_utilities).
 
 ## Installing
 
@@ -80,7 +46,7 @@ and should be also possible with [WSL](https://docs.microsoft.com/en-us/windows/
 In Cygwin drop `sudo`: `cd seq-tools && make && make test && make install`
 
 
-## Synopsis
+## Tools
 
 `seq-tools seq-t2u <in.seq >out.seq` - Convert T to U.
 
@@ -105,6 +71,12 @@ Only capital "N" is recognized as hard mask.
 `seq-tools seq-hard-mask-add --mask in.mask <in.seq >out.seq` - Adds hard mask (stretches of "N") according to in.mask.
 Note: Don't use with untrusted mask file, as a malicious mask can cause the output to exceed your storage capacity.
 
+`seq-tools seq-iupac-extract --iupac out.iupac <in.seq >out.seq` - Removes ambiguous IUPAC nucleotide codes from sequence.
+Removes capital characters R, Y, S, W, K, M, B, D, H, V (not N), and stores their locations in the "out.iupac" file.
+
+`seq-tools seq-iupac-add --iupac in.iupac <in.seq >out.seq` - Adds back IUPAC codes,
+previously removed with "seq-tools seq-iupac-extract" command.
+
 
 ## File formats
 
@@ -116,3 +88,18 @@ Note: Don't use with untrusted mask file, as a malicious mask can cause the outp
 Each number is the length of a continuous sequence interval with the same mask.
 The first interval is always non-masked. If the sequence starts masked, then the first interval length is 0.
 Examples: sequence "AaaNAA" has soft mask intervals 1,2,3, and hard mask intervals 3,1,2.
+
+**IUPAC (.iupac):** A binary file that stores locations of ambiguous IUPAC codes (except N).
+The file stores a sequence of 9 byte records.
+Each records consists of a number (64-bit unsigned, platform-native endianness) and a character.
+The meaning is: Skip this many bytes in the input, then add this character.
+
+
+## Other tools
+
+Naturally, please be aware of numerous other toolkits that may or may not better suit your needs:
+[Seqtk](https://github.com/lh3/seqtk),
+[FASTX-Toolkit](http://hannonlab.cshl.edu/fastx_toolkit/),
+[SeqKit](https://github.com/shenwei356/seqkit),
+[seqmagick](https://fhcrc.github.io/seqmagick/),
+[Fasta Utilities](https://github.com/jimhester/fasta_utilities).

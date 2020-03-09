@@ -5,8 +5,8 @@
  */
 
 #define SOFTWARE_NAME "seq-tools"
-#define VERSION "0.1.1"
-#define DATE "2020-02-28"
+#define VERSION "0.1.1-2"
+#define DATE "2020-03-01"
 #define COPYRIGHT_YEARS "2019-2020"
 
 
@@ -91,6 +91,30 @@ static void* malloc_or_die(const size_t size)
         out_of_memory(size);
     }
     return buf;
+}
+
+
+static FILE* fopen_to_read_or_die(const char *path, const char *name)
+{
+    FILE *F = fopen(path, "rb");
+    if (F == NULL)
+    {
+        die("Can't open %s", name);
+    }
+    register_file_to_close(F);
+    return F;
+}
+
+
+static FILE* fopen_to_write_or_die(const char *path, const char *name)
+{
+    FILE *F = fopen(path, "wb");
+    if (F == NULL)
+    {
+        die("Can't create %s", name);
+    }
+    register_file_to_close(F);
+    return F;
 }
 
 
@@ -405,8 +429,6 @@ static void tool_seq_split_to_lines(int n_args, char **args)
 static void tool_seq_soft_mask_add(int n_args, char **args)
 {
     char *mask_path = NULL;
-    FILE *MASK = NULL;
-
     for (int i = 0; i < n_args; i++)
     {
         if (i < n_args - 1)
@@ -425,12 +447,7 @@ static void tool_seq_soft_mask_add(int n_args, char **args)
         die("Mask file is not specified");
     }
 
-    MASK = fopen(mask_path, "rb");
-    if (MASK == NULL)
-    {
-        die("Can't open mask file");
-    }
-    register_file_to_close(MASK);
+    FILE *MASK = fopen_to_read_or_die(mask_path, "mask file");
 
     for (;;)
     {
@@ -518,8 +535,6 @@ static void tool_seq_soft_mask_add(int n_args, char **args)
 static void tool_seq_hard_mask_add(int n_args, char **args)
 {
     char *mask_path = NULL;
-    FILE *MASK = NULL;
-
     for (int i = 0; i < n_args; i++)
     {
         if (i < n_args - 1)
@@ -538,12 +553,7 @@ static void tool_seq_hard_mask_add(int n_args, char **args)
         die("Mask file is not specified");
     }
 
-    MASK = fopen(mask_path, "rb");
-    if (MASK == NULL)
-    {
-        die("Can't open mask file");
-    }
-    register_file_to_close(MASK);
+    FILE *MASK = fopen_to_read_or_die(mask_path, "mask file");
 
     unsigned char *n_buffer = (unsigned char *) malloc_or_die(in_buffer_size);
     memset(n_buffer, 'N', in_buffer_size);
@@ -616,8 +626,6 @@ static void tool_seq_hard_mask_add(int n_args, char **args)
 static void tool_seq_soft_mask_extract(int n_args, char **args)
 {
     char *mask_path = NULL;
-    FILE *MASK = NULL;
-
     for (int i = 0; i < n_args; i++)
     {
         if (i < n_args - 1)
@@ -636,12 +644,7 @@ static void tool_seq_soft_mask_extract(int n_args, char **args)
         die("Mask file is not specified");
     }
 
-    MASK = fopen(mask_path, "wb");
-    if (MASK == NULL)
-    {
-        die("Can't create mask file");
-    }
-    register_file_to_close(MASK);
+    FILE *MASK = fopen_to_write_or_die(mask_path, "mask file");
 
     bool masked = false;
     unsigned long long length = 0ull;
@@ -680,8 +683,6 @@ static void tool_seq_soft_mask_extract(int n_args, char **args)
 static void tool_seq_hard_mask_extract(int n_args, char **args)
 {
     char *mask_path = NULL;
-    FILE *MASK = NULL;
-
     for (int i = 0; i < n_args; i++)
     {
         if (i < n_args - 1)
@@ -700,12 +701,7 @@ static void tool_seq_hard_mask_extract(int n_args, char **args)
         die("Mask file is not specified");
     }
 
-    MASK = fopen(mask_path, "wb");
-    if (MASK == NULL)
-    {
-        die("Can't create mask file");
-    }
-    register_file_to_close(MASK);
+    FILE *MASK = fopen_to_write_or_die(mask_path, "mask file");
 
     bool masked = false;
     unsigned long long length = 0ull;
@@ -743,6 +739,139 @@ static void tool_seq_hard_mask_extract(int n_args, char **args)
     {
         fwrite_or_die(&length, sizeof(length), 1, MASK);
     }
+}
+
+
+static void tool_seq_iupac_add(int n_args, char **args)
+{
+    char *iupac_path = NULL;
+    for (int i = 0; i < n_args; i++)
+    {
+        if (i < n_args - 1)
+        {
+            if (strcmp(args[i], "--iupac") == 0)
+            {
+                i++;
+                iupac_path = args[i];
+                continue;
+            }
+        }
+        die("Unknown or incomplete argument \"%s\"", args[i]);
+    }
+    if (iupac_path == NULL)
+    {
+        die("IUPAC file is not specified");
+    }
+
+    FILE *IUPAC = fopen_to_read_or_die(iupac_path, "IUPAC file");
+
+    unsigned long long shift;
+    unsigned char c;
+    while ( fread(&shift, sizeof(shift), 1, IUPAC) == 1 &&
+            fread(&c, sizeof(c), 1, IUPAC) == 1)
+    {
+        // Suppressing Coverity Scan false positive.
+        // While we don't verify the value of 'shift', we still do want to use it as loop boundary.
+        // coverity[tainted_data]
+        while (shift > 0)
+        {
+            if (in_begin >= in_end)
+            {
+                in_begin = 0;
+                in_end = fread(in_buffer, 1, in_buffer_size, stdin);
+                if (in_end == 0)
+                {
+                    die("Input sequence is too short");
+                }
+            }
+
+            unsigned long long len1 = in_end - in_begin;
+            if (len1 > shift)
+            {
+                len1 = shift;
+            }
+
+            fwrite_or_die(in_buffer + in_begin, 1, len1, stdout);
+
+            shift -= len1;
+            in_begin += len1;
+        }
+
+        fputc_or_die(c, stdout);
+    }
+
+    do
+    {
+        fwrite_or_die(in_buffer + in_begin, 1, in_end - in_begin, stdout);
+        in_begin = 0;
+        in_end = fread(in_buffer, 1, in_buffer_size, stdin);
+    }
+    while (in_end > 0);
+}
+
+
+static void tool_seq_iupac_extract(int n_args, char **args)
+{
+    char *iupac_path = NULL;
+    for (int i = 0; i < n_args; i++)
+    {
+        if (i < n_args - 1)
+        {
+            if (strcmp(args[i], "--iupac") == 0)
+            {
+                i++;
+                iupac_path = args[i];
+                continue;
+            }
+        }
+        die("Unknown or incomplete argument \"%s\"", args[i]);
+    }
+    if (iupac_path == NULL)
+    {
+        die("IUPAC file is not specified");
+    }
+
+    FILE *IUPAC = fopen_to_write_or_die(iupac_path, "IUPAC file");
+
+    bool is_iupac_arr[256];
+    memset(is_iupac_arr, 0, sizeof(is_iupac_arr));
+    is_iupac_arr['R'] = true;
+    is_iupac_arr['Y'] = true;
+    is_iupac_arr['S'] = true;
+    is_iupac_arr['W'] = true;
+    is_iupac_arr['K'] = true;
+    is_iupac_arr['M'] = true;
+    is_iupac_arr['B'] = true;
+    is_iupac_arr['D'] = true;
+    is_iupac_arr['H'] = true;
+    is_iupac_arr['V'] = true;
+
+    unsigned long long shift = 0ull;
+
+    do
+    {
+        in_begin = 0;
+        in_end = fread(in_buffer, 1, in_buffer_size, stdin);
+
+        for (size_t i = 0; i < in_end; i++)
+        {
+            if (is_iupac_arr[in_buffer[i]])
+            {
+                fwrite_or_die(in_buffer + in_begin, 1, i - in_begin, stdout);
+
+                shift += i - in_begin;
+                fwrite(&shift, sizeof(shift), 1, IUPAC);
+                fputc(in_buffer[i], IUPAC);
+
+                shift = 0ull;
+                in_begin = i + 1;
+            }
+        }
+
+        shift += in_end - in_begin;
+        fwrite(in_buffer + in_begin, 1, in_end - in_begin, stdout);
+    }
+    while (in_end > 0);
 }
 
 
@@ -805,6 +934,14 @@ int main(int argc, char **argv)
         else if (strcmp(tool_suffix, "hard-mask-extract") == 0)
         {
             tool_seq_hard_mask_extract(n_args, args);
+        }
+        else if (strcmp(tool_suffix, "iupac-add") == 0)
+        {
+            tool_seq_iupac_add(n_args, args);
+        }
+        else if (strcmp(tool_suffix, "iupac-extract") == 0)
+        {
+            tool_seq_iupac_extract(n_args, args);
         }
         else
         {

@@ -1,0 +1,1 @@
+1 {SEQ-TOOLS} seq-iupac-add --iupac {TEST}.iupac <{TEST}.seq >{TEST}.seq.out 2>{TEST}.err

@@ -1,0 +1,1 @@
+0 {SEQ-TOOLS} seq-iupac-extract --iupac {TEST}.iupac.out <{GROUP}.seq >{TEST}.seq.out
