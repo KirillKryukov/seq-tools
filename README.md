@@ -77,6 +77,8 @@ Removes capital characters R, Y, S, W, K, M, B, D, H, V (not N), and stores thei
 `seq-tools seq-iupac-add --iupac in.iupac <in.seq >out.seq` - Adds back IUPAC codes,
 previously removed with "seq-tools seq-iupac-extract" command.
 
+`seq-tools fasta-unwrap-lines <in.fasta >out.fasta` - Convert each sequence to single line.
+
 
 ## File formats
 
@@ -93,6 +95,9 @@ Examples: sequence "AaaNAA" has soft mask intervals 1,2,3, and hard mask interva
 The file stores a sequence of 9 byte records.
 Each records consists of a number (64-bit unsigned, platform-native endianness) and a character.
 The meaning is: Skip this many bytes in the input, then add this character.
+
+**FASTA** A text file containing newline-separated records. Each record includes: '>', name, end-of-line character, data.
+Data may occupy multiple lines.
 
 
 ## Other tools

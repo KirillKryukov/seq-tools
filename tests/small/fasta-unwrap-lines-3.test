@@ -1,0 +1,1 @@
+0 {SEQ-TOOLS} fasta-unwrap-lines <{TEST}.fa >{TEST}.fa.out 2>{TEST}.err

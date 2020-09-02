@@ -1,12 +1,12 @@
 /*
  * seq-tools
- * Copyright (c) 2019 Kirill Kryukov
+ * Copyright (c) 2019-2020 Kirill Kryukov
  * See README.md and LICENSE files of this repository
  */
 
 #define SOFTWARE_NAME "seq-tools"
-#define VERSION "0.1.1-2"
-#define DATE "2020-03-01"
+#define VERSION "0.1.2-1"
+#define DATE "2020-09-02"
 #define COPYRIGHT_YEARS "2019-2020"
 
 
@@ -139,6 +139,18 @@ static void free_in_buffer(void)
         free(in_buffer);
         in_buffer = NULL;
     }
+}
+
+
+__attribute__((always_inline))
+static inline int in_get_char(void)
+{
+    if (in_begin >= in_end)
+    {
+        refill_in_buffer();
+        if (in_end == 0) { return -1; }
+    }
+    return in_buffer[in_begin++];
 }
 
 
@@ -875,6 +887,158 @@ static void tool_seq_iupac_extract(int n_args, char **args)
 }
 
 
+__attribute__((always_inline))
+static inline int skip_end_of_line(void)
+{
+    for (;;)
+    {
+        if (in_begin >= in_end)
+        {
+            refill_in_buffer();
+            if (in_end == 0)
+            {
+                return -1;
+            }
+        }
+
+        while (in_begin < in_end)
+        {
+            if (in_buffer[in_begin] != 10 && in_buffer[in_begin] != 13)
+            {
+                return in_buffer[in_begin];
+            }
+            in_begin++;
+        }
+    }
+}
+
+
+__attribute__((always_inline))
+static inline int fasta_print_name(void)
+{
+    int c = -1;
+    do
+    {
+        if (in_begin >= in_end)
+        {
+            refill_in_buffer();
+            if (in_end == 0)
+            {
+                break;
+            }
+        }
+
+        size_t i;
+        for (i = in_begin; i < in_end; i++)
+        {
+            if (in_buffer[i] == 10 || in_buffer[i] == 13)
+            {
+                c = 10;
+                break;
+            }
+        }
+
+        if (i == in_end)
+        {
+            i--;
+        }
+        fwrite_or_die(in_buffer + in_begin, 1, i - in_begin + 1, stdout);
+        in_begin = i + 1;
+    }
+    while (c < 0);
+    return c;
+}
+
+
+__attribute__((always_inline))
+static inline int fasta_print_seq_one_line(void)
+{
+    for (;;)
+    {
+        if (in_begin >= in_end)
+        {
+            refill_in_buffer();
+            if (in_end == 0)
+            {
+                fputc_or_die('\n', stdout);
+                return -1;
+            }
+        }
+
+        size_t i;
+        for (i = in_begin; i < in_end; i++)
+        {
+            if (in_buffer[i] == 10 || in_buffer[i] == 13)
+            {
+                fwrite_or_die(in_buffer + in_begin, 1, i - in_begin, stdout);
+
+                do
+                {
+                    i++;
+                    if (i >= in_end)
+                    {
+                        refill_in_buffer();
+                        if (in_end == 0)
+                        {
+                            fputc_or_die('\n', stdout);
+                            return -1;
+                        }
+                        i = in_begin;
+                    }
+                }
+                while (in_buffer[i] == 10 || in_buffer[i] == 13);
+
+                in_begin = i;
+
+                if (in_buffer[i] == '>')
+                {
+                    fputc_or_die('\n', stdout);
+                    return '>';
+                }
+            }
+        }
+
+        if (i > in_begin)
+        {
+            fwrite_or_die(in_buffer + in_begin, 1, i - in_begin, stdout);
+        }
+        in_begin = i;
+    }
+}
+
+
+static void tool_fasta_unwrap_lines(void)
+{
+    int c = skip_end_of_line();
+    if (c != '>')
+    {
+        die("Input is not in FASTA format");
+        exit(1);
+    }
+
+    while (c >= 0)
+    {
+        c = fasta_print_name();
+        if (c < 0)
+        {
+            break;
+        }
+
+        c = skip_end_of_line();
+        if (c < 0)
+        {
+            break;
+        }
+        else if (c == '>')
+        {
+            continue;
+        }
+
+        c = fasta_print_seq_one_line();
+    }
+}
+
+
 int main(int argc, char **argv)
 {
     if (argc < 2)
@@ -942,6 +1106,18 @@ int main(int argc, char **argv)
         else if (strcmp(tool_suffix, "iupac-extract") == 0)
         {
             tool_seq_iupac_extract(n_args, args);
+        }
+        else
+        {
+            unknown_tool();
+        }
+    }
+    else if (strncmp(tool_name, "fasta-", 6) == 0)
+    {
+        const char *tool_suffix = tool_name + 6;
+        if (strcmp(tool_suffix, "unwrap-lines") == 0)
+        {
+            tool_fasta_unwrap_lines();
         }
         else
         {
