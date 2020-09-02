@@ -5,8 +5,8 @@ It's super-fast, uses constant RAM, and scales to huge data sizes.
 
 |Branch      |Status   |
 |------------|---------|
-|master      | [![Build Status][TravisMasterBadge]][TravisLink] [![Codecov][CodecovMasterBadge]](CodecovLink) |
-|develop     | [![Build Status][TravisDevelopBadge]][TravisLink] [![Codecov][CodecovDevelopBadge]](CodecovLink) [![Coverity][CoverityBadge]][CoverityLink] |
+|master      | [![Build Status][TravisMasterBadge]][TravisLink] [![Codecov][CodecovMasterBadge]][CodecovLink] |
+|develop     | [![Build Status][TravisDevelopBadge]][TravisLink] [![Codecov][CodecovDevelopBadge]][CodecovLink] [![Coverity][CoverityBadge]][CoverityLink] |
 
 [TravisMasterBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=master "Continuous Integration test suite"
 [TravisDevelopBadge]: https://travis-ci.org/KirillKryukov/seq-tools.svg?branch=develop "Continuous Integration test suite"
